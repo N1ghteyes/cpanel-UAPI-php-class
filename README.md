@@ -1,10 +1,8 @@
 ##cPanel UAPI PHP class
-=====================
 
 PHP class to provide an easy to use interface with cpanels UAPI.
 
 ##Usage
-=======
 
 See the example files, but typical useage takes the form of:
 
