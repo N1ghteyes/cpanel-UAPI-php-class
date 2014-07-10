@@ -1,0 +1,9 @@
+Changelog
+=========
+
+Changelog for the Cpanel UAPI PHP Class
+
+Version 1.0
+===========
+
+# Initial commit
