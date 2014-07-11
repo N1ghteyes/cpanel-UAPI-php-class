@@ -50,7 +50,7 @@ class cpanelUAPI
   {
     $this->type = $this->ssl == 1 ? "https://" : "http://";
     $this->requestUrl = $this->type . $this->server . ':' . $this->port . '/execute/';
-    $this->auth = base64_encode($user . ":" . $pass);
+    $this->auth = base64_encode($this->user . ":" . $this->pass);
   }
 
   /**
