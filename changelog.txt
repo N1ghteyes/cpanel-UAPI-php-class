@@ -3,6 +3,20 @@ Changelog
 
 Changelog for the Cpanel UAPI PHP Class
 
+version 1.0.2
+=============
+
+# Renamed cpaneluapi.class to cpaneluapi.class.php to avoid issues with IDEs
+# Added new examples file for the mysql module
+# Added php file comments and a gitignore file to ignore phpstorm project files.
+
+version 1.0.1
+=============
+
+# Fixed local reference to user and pass vars
+# some commenting
+# other fixes.
+
 Version 1.0
 ===========
 
