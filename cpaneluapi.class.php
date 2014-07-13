@@ -1,6 +1,18 @@
 <?php
 
 /**
+ * PHP class to handle connections with cPanel's UAPI as seamlessly and simply as possible.
+ *
+ * For documentation on cPanel's UAPI:
+ * @see https://documentation.cpanel.net/display/SDK/UAPI+Functions
+ *
+ * @author N1ghteyes - www.source-control.co.uk
+ * @copyright 2014 N1ghteyes
+ * @license license.txt The MIT License (MIT)
+ * @link https://github.com/N1ghteyes/cpanel-UAPI-php-class
+ */
+
+/**
  * Class cpanelUAPI
  */
 class cpanelUAPI
@@ -82,7 +94,7 @@ class cpanelUAPI
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array("Authorization: Basic " . $this->auth));
     curl_setopt($ch, CURLOPT_TIMEOUT, 100020);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 
     $content = $this->curl_exec_follow($ch);
     $err = curl_errno($ch);
@@ -118,12 +130,12 @@ class cpanelUAPI
 
       curl_setopt($ch, CURLOPT_FOLLOWLOCATION, $mr > 0);
       curl_setopt($ch, CURLOPT_MAXREDIRS, $mr);
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 
     } else {
 
-      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, FALSE);
 
       if ($mr > 0) {
         $original_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
@@ -131,9 +143,9 @@ class cpanelUAPI
 
         $rch = curl_copy_handle($ch);
 
-        curl_setopt($rch, CURLOPT_HEADER, true);
-        curl_setopt($rch, CURLOPT_NOBODY, true);
-        curl_setopt($rch, CURLOPT_FORBID_REUSE, false);
+        curl_setopt($rch, CURLOPT_HEADER, TRUE);
+        curl_setopt($rch, CURLOPT_NOBODY, TRUE);
+        curl_setopt($rch, CURLOPT_FORBID_REUSE, FALSE);
         do {
           curl_setopt($rch, CURLOPT_URL, $newurl);
           $header = curl_exec($rch);
@@ -164,7 +176,7 @@ class cpanelUAPI
           else
             $maxredirect = 0;
 
-          return false;
+          return FALSE;
         }
         curl_setopt($ch, CURLOPT_URL, $newurl);
       }

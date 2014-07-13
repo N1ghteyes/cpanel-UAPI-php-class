@@ -8,7 +8,7 @@ See the example files, but typical useage takes the form of:
 
 ```
 //load class
-$cpuapi = new cpaneluapi('user', 'password', 'cpanel.example.com');
+$cpuapi = new cpanelUAPI('user', 'password', 'cpanel.example.com');
 
 //Set the scope to the module we want to use. in this case, Mysql
 $cpuapi->scope = 'Mysql';
