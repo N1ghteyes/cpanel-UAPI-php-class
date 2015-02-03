@@ -2,7 +2,7 @@
 
 PHP class to provide an easy to use interface with cpanels UAPI.
 
-###Known Bugs
+##Known Bugs
 
 - When running on systems with PHP safe mode turned on AND open_basedir is set to an empty string.
 
