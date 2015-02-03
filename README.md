@@ -2,7 +2,7 @@
 
 PHP class to provide an easy to use interface with cpanels UAPI.
 
-#Known Bugs
+###Known Bugs
 
 - When running on systems with PHP safe mode turned on AND open_basedir is set to an empty string.
 When the requested end point doesnt redirect, curl_exec_follow requests it twice. Once for the headers to check the HTTP Status and then once to fire the request. This is fine for getting data, however when the endpoint is used to generate something remotely, a specific use case would be an SSH key, 2 keys are generated and the SECOND one is returned.
