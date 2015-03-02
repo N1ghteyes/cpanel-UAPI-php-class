@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="cPanel UAPI PHP Class : Easy to use magic class for connecting to cPanel&#39;s UAPI">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>cPanel UAPI PHP Class</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/N1ghteyes/cpanel-UAPI-php-class">View on GitHub</a>
+
+          <h1 id="project_title">cPanel UAPI PHP Class</h1>
+          <h2 id="project_tagline">Easy to use magic class for connecting to cPanel&#39;s UAPI</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/N1ghteyes/cpanel-UAPI-php-class/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/N1ghteyes/cpanel-UAPI-php-class/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>
+<a id="cpanel-uapi-php-class" class="anchor" href="#cpanel-uapi-php-class" aria-hidden="true"><span class="octicon octicon-link"></span></a>cPanel UAPI PHP class</h3>
+
+<p>PHP class to provide an easy to use interface with cpanels UAPI.</p>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>See the example files, but typical useage takes the form of:</p>
+
+<pre><code>//load class
+$cpuapi = new cpanelUAPI('user', 'password', 'cpanel.example.com');
+
+//Set the scope to the module we want to use. in this case, Mysql
+$cpuapi-&gt;scope = 'Mysql';
+
+//call the function we want like this. Any arguments are passed into the function as an array, in the form of param =&gt; value.
+$response = $cpuapi-&gt;get_restrictions(); 
+print_r($response);
+</code></pre>
+
+<h2>
+<a id="known-bugs" class="anchor" href="#known-bugs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Known Bugs</h2>
+
+<ul>
+<li>When running on systems with PHP safe mode turned on AND open_basedir is set to an empty string.</li>
+</ul>
+
+<p>When the requested end point doesnt redirect, curl_exec_follow requests it twice. Once for the headers to check the HTTP Status and then once to fire the request. This is fine for getting data, however when the endpoint is used to generate something remotely, a specific use case would be an SSH key, 2 keys are generated and the SECOND one is returned.</p>
+
+<ul>
+<li>Work Around</li>
+</ul>
+
+<p>If not on a shared server, ether set open_basedir or turn safe mode off.
+If on a shared server, comment out the curl_exec on line 157, this will break any requests that get redirected, but should not effect most people.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">cPanel UAPI PHP Class maintained by <a href="https://github.com/N1ghteyes">N1ghteyes</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
