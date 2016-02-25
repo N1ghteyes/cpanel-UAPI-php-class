@@ -1,7 +1,9 @@
 ##cPanel UAPI and API2 PHP class
 
-PHP class to provide an easy to use interface with cpanels UAPI and API2 (as of version 1.1).
-The implimentation is exactly the same fot both, the processing done in the class are slightly different.
+PHP class to provide an easy to use interface with cPanel’s UAPI and API2 (as of version 1.1).
+The implementation is exactly the same for both, the processing done is slightly different behind the scenes.
+
+v1.1 should be backwards compatible.
 
 ##Usage
 
