@@ -3,6 +3,25 @@ Changelog
 
 Changelog for the Cpanel UAPI PHP Class
 
+version 1.1
+=============
+
+New:
+- Generalised the class to now support API2 as well as UAPI.
+  $uapi = new cpanelUAPI();
+  $api = new cpanelAPI2();
+
+  The usage is the same, the main difference is in the internal processing, hence the separation.
+- Added the ability to get the last request URL for debugging / logging.
+
+Changes / Improvements:
+- Added error checking
+- Added more and better commenting
+- Renamed a few veriables.
+
+Bugs:
+- Added maxredirect, set default to 0 for issue #2
+
 version 1.0.2
 =============
 
