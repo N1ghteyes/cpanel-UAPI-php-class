@@ -1,32 +1,66 @@
 <?php
 
 /**
- * PHP class to handle connections with cPanel's UAPI as seamlessly and simply as possible.
+ * PHP class to handle connections with cPanel's UAPI and API2 specifically through cURL requests as seamlessly and simply as possible.
  *
  * For documentation on cPanel's UAPI:
  * @see https://documentation.cpanel.net/display/SDK/UAPI+Functions
  *
+ * For documentation on cPanel's API2:
+ * @see https://documentation.cpanel.net/display/SDK/Guide+to+cPanel+API+2
+ *
+ * Please use UAPI where possible, only use API2 where the equivalent doesn't exist for UAPI
+ *
  * @author N1ghteyes - www.source-control.co.uk
- * @copyright 2014 N1ghteyes
+ * @copyright 2016 N1ghteyes
  * @license license.txt The MIT License (MIT)
  * @link https://github.com/N1ghteyes/cpanel-UAPI-php-class
  */
 
 /**
- * Class cpanelUAPI
+ * Class cPanelUAPI
+ * Added for backwards compatibility
  */
-class cpanelUAPI
+class cpanelUAPI extends cpanelAPI{
+  function __construct($user, $pass, $server){
+    parent::__construct($user, $pass, $server);
+    $this->setApi('uapi');
+    $this->version = '1.0';
+  }
+}
+
+/**
+ * Class cPanelAPI2
+ * Added to set api2 info.
+ */
+class cpanelAPI2 extends cpanelAPI{
+  function __construct($user, $pass, $server){
+    parent::__construct($user, $pass, $server);
+    $this->setApi('api2');
+    $this->version = '1.0';
+  }
+}
+
+/**
+ * Class cPanelAPI
+ */
+class cpanelAPI
 {
-  public $cpanelUAPI = '1.0';
+  public $version = '1.0';
   public $scope = ""; //String - Module we want to use
   public $ssl = 1; //Bool - TRUE / FALSE for ssl connection
   public $port = 2083; //default for ssl servers.
   public $server;
+  public $maxredirect = 0; //Number of redirects to make, typically 0 is fine. on some shared setups this will need to be increased.
 
+  protected $api;
   protected $auth;
   protected $user;
   protected $pass;
+  protected $secret;
   protected $type;
+  protected $session;
+  protected $method;
   protected $requestUrl;
 
   /**
@@ -41,43 +75,71 @@ class cpanelUAPI
     $this->server = $server;
   }
 
+  protected function setApi($api){
+    $this->api = $api;
+    $this->setMethod();
+  }
+
   /**
    * Magic __call method, will translate all function calls to object to API requests
-   * @param String $name name of the function
-   * @param array $arguments an array of arguments
-   * @return - Object from json_decode
+   * @param $name - name of the function
+   * @param $arguments - an array of arguments
+   * @return mixed
+   * @throws Exception
    */
   public function  __call($name, $arguments)
   {
-    $this->connections(); //set paths etc at the last possible moment to allow for changes before this call is made.
     if (count($arguments) < 1 || !is_array($arguments[0]))
       $arguments[0] = array();
     return json_decode($this->APIcall($name, $arguments[0]));
   }
 
-  /**
-   * function to set all the connection variables, called before APIcall
-   */
-  protected function connections()
-  {
-    $this->type = $this->ssl == 1 ? "https://" : "http://";
-    $this->requestUrl = $this->type . $this->server . ':' . $this->port . '/execute/';
-    $this->auth = base64_encode($this->user . ":" . $this->pass);
+  public function getLastRequest(){
+    return $this->requestUrl;
+  }
+
+  protected function setMethod(){
+    switch($this->api){
+      case 'uapi':
+        $this->method = '/execute/';
+            break;
+      case 'api2':
+        $this->method = '/json-api/cpanel/';
+            break;
+      default:
+            throw new Exception('$this->api is not set or is incorrectly set. The only available options are \'uapi\' or \'api2\'');
+    }
   }
 
   /**
    * @param $name
    * @param $arguments
    * @return bool|mixed
+   * @throws Exception
    */
   protected function APIcall($name, $arguments)
   {
-    $url = $this->requestUrl . ($this->scope != '' ? $this->scope . "/" : '') . $name . '?';
+    $this->auth = base64_encode($this->user . ":" . $this->pass);
+    $this->type = $this->ssl == 1 ? "https://" : "http://";
+    $this->requestUrl = $this->type . $this->server . ':' . $this->port . $this->method;
+    switch($this->api){
+      case 'uapi':
+        $this->requestUrl .= ($this->scope != '' ? $this->scope . "/" : '') . $name . '?';
+        break;
+      case 'api2':
+        if($this->scope == ''){
+          throw new Exception('Scope must be set.');
+        }
+        $this->requestUrl .= '?cpanel_jsonapi_user='.$this->user.'&cpanel_jsonapi_apiversion=2&cpanel_jsonapi_module='.$this->scope.'&cpanel_jsonapi_func='.$name.'&';
+        break;
+      default:
+        throw new Exception('$this->api is not set or is incorrectly set. The only available options are \'uapi\' or \'api2\'');
+    }
     foreach ($arguments as $key => $value) {
-      $url .= $key . "=" . $value . "&";
+      $this->requestUrl .= $key . "=" . $value . "&";
     }
 
-    return $this->curl_request($url);
+    return $this->curl_request($this->requestUrl);
   }
 
   /**
@@ -96,7 +158,7 @@ class cpanelUAPI
     curl_setopt($ch, CURLOPT_TIMEOUT, 100020);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 
-    $content = $this->curl_exec_follow($ch);
+    $content = $this->curl_exec_follow($ch, $this->maxredirect);
     $err = curl_errno($ch);
     $errmsg = curl_error($ch);
     $header = curl_getinfo($ch);
@@ -184,5 +246,3 @@ class cpanelUAPI
     return curl_exec($ch);
   }
 }
-
-?>
