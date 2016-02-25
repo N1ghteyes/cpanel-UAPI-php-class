@@ -25,7 +25,6 @@ class cpanelUAPI extends cpanelAPI{
   function __construct($user, $pass, $server){
     parent::__construct($user, $pass, $server);
     $this->setApi('uapi');
-    $this->version = '1.0';
   }
 }
 
@@ -37,7 +36,6 @@ class cpanelAPI2 extends cpanelAPI{
   function __construct($user, $pass, $server){
     parent::__construct($user, $pass, $server);
     $this->setApi('api2');
-    $this->version = '1.0';
   }
 }
 
@@ -46,7 +44,7 @@ class cpanelAPI2 extends cpanelAPI{
  */
 class cpanelAPI
 {
-  public $version = '1.0';
+  public $version = '1.1';
   public $scope = ""; //String - Module we want to use
   public $ssl = 1; //Bool - TRUE / FALSE for ssl connection
   public $port = 2083; //default for ssl servers.
