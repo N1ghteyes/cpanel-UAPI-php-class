@@ -31,6 +31,6 @@ $cpapi2 = new cpanelAPI2('user', 'password', 'cpanel.example.com');
 $cpapi2->scope = 'SubDomain';
 
 //call the function we want like this. Any arguments are passed into the function as an array, in the form of param => value.
-$response = $cpapi2->addsubdomain(array('rootdomain' => ''domain.com, 'domain' => 'sub')); 
+$response = $cpapi2->addsubdomain(array('rootdomain' => 'domain.com', 'domain' => 'sub')); 
 print_r($response);
 ```
