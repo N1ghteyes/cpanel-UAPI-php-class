@@ -15,42 +15,23 @@
  * @copyright 2016 N1ghteyes
  * @license license.txt The MIT License (MIT)
  * @link https://github.com/N1ghteyes/cpanel-UAPI-php-class
+ *
+ * @todo - im sure there is a lot that can be improved here
  */
-
-/**
- * Class cPanelUAPI
- * Added for backwards compatibility
- */
-class cpanelUAPI extends cpanelAPI{
-  function __construct($user, $pass, $server){
-    parent::__construct($user, $pass, $server);
-    $this->setApi('uapi');
-  }
-}
-
-/**
- * Class cPanelAPI2
- * Added to set api2 info.
- */
-class cpanelAPI2 extends cpanelAPI{
-  function __construct($user, $pass, $server){
-    parent::__construct($user, $pass, $server);
-    $this->setApi('api2');
-  }
-}
 
 /**
  * Class cPanelAPI
  */
 class cpanelAPI
 {
-  public $version = '1.1';
-  public $scope = ""; //String - Module we want to use
+  public $version = '2.0';
   public $ssl = 1; //Bool - TRUE / FALSE for ssl connection
   public $port = 2083; //default for ssl servers.
   public $server;
   public $maxredirect = 0; //Number of redirects to make, typically 0 is fine. on some shared setups this will need to be increased.
+  public $json = '';
 
+  protected $scope; //String - Module we want to use
   protected $api;
   protected $auth;
   protected $user;
@@ -60,6 +41,8 @@ class cpanelAPI
   protected $session;
   protected $method;
   protected $requestUrl;
+  protected $eno;
+  protected $emes;
 
   /**
    * @param $user
@@ -73,9 +56,38 @@ class cpanelAPI
     $this->server = $server;
   }
 
+  /**
+   * Set the api to use for connections.
+   * @param $api
+   * @return $this
+   * @throws Exception
+   */
   protected function setApi($api){
     $this->api = $api;
     $this->setMethod();
+    return $this;
+  }
+
+  public function __get($name){
+      switch(strtolower($name)){
+        case 'api2':
+          $this->setApi('api2');
+          break;
+        case 'uapi':
+          $this->setApi('uapi');
+          break;
+        default:
+          $this->scope = $name;
+      }
+    return $this;
+  }
+
+  /**
+   * Magic __toSting() method, allows us to return the result as raw json
+   * @return mixed
+   */
+  public function __toString(){
+    return $this->json;
   }
 
   /**
@@ -88,14 +100,35 @@ class cpanelAPI
   public function  __call($name, $arguments)
   {
     if (count($arguments) < 1 || !is_array($arguments[0]))
-      $arguments[0] = array();
-    return json_decode($this->APIcall($name, $arguments[0]));
+      $arguments[0] = [];
+    $this->json = $this->APIcall($name, $arguments[0]);
+    return json_decode($this->json);
   }
 
+  /**
+   * Function to get the last request made
+   * @return mixed
+   */
   public function getLastRequest(){
     return $this->requestUrl;
   }
 
+  /**
+   * Function to return the error if there was one, or FALSE if not.
+   * @return array|bool
+   */
+  public function getError(){
+    if(!empty($this->eno)){
+      return ['no' => $this->eno, 'message' => $this->emes];
+    }
+    return FALSE;
+  }
+
+  /**
+   * Function to set the method used to communicate with the chosen api.
+   * @return $this
+   * @throws Exception
+   */
   protected function setMethod(){
     switch($this->api){
       case 'uapi':
@@ -107,6 +140,7 @@ class cpanelAPI
       default:
             throw new Exception('$this->api is not set or is incorrectly set. The only available options are \'uapi\' or \'api2\'');
     }
+    return $this;
   }
 
   /**
@@ -157,17 +191,12 @@ class cpanelAPI
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 
     $content = $this->curl_exec_follow($ch, $this->maxredirect);
-    $err = curl_errno($ch);
-    $errmsg = curl_error($ch);
-    $header = curl_getinfo($ch);
+    $this->eno = curl_errno($ch);
+    $this->emes = curl_error($ch);
 
     curl_close($ch);
 
-    $header['errno'] = $err;
-    $header['errmsg'] = $errmsg;
-    $header['content'] = $content;
-
-    return $header['content'];
+    return $content;
   }
 
   /**
@@ -177,7 +206,6 @@ class cpanelAPI
    */
   protected function curl_exec_follow($ch, &$maxredirect = null)
   {
-
     // we emulate a browser here since some websites detect
     // us as a bot and don't let us do our job
     $user_agent = "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.5)" .
@@ -186,61 +214,10 @@ class cpanelAPI
 
     $mr = $maxredirect === null ? 5 : intval($maxredirect);
 
-    if (ini_get('open_basedir') == '' && ini_get('safe_mode') == 'Off') {
-
-      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, $mr > 0);
-      curl_setopt($ch, CURLOPT_MAXREDIRS, $mr);
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-
-    } else {
-
-      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, FALSE);
-
-      if ($mr > 0) {
-        $original_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-        $newurl = $original_url;
-
-        $rch = curl_copy_handle($ch);
-
-        curl_setopt($rch, CURLOPT_HEADER, TRUE);
-        curl_setopt($rch, CURLOPT_NOBODY, TRUE);
-        curl_setopt($rch, CURLOPT_FORBID_REUSE, FALSE);
-        do {
-          curl_setopt($rch, CURLOPT_URL, $newurl);
-          $header = curl_exec($rch);
-          if (curl_errno($rch)) {
-            $code = 0;
-          } else {
-            $code = curl_getinfo($rch, CURLINFO_HTTP_CODE);
-            if ($code == 301 || $code == 302) {
-              preg_match('/Location:(.*?)\n/', $header, $matches);
-              $newurl = trim(array_pop($matches));
-
-              // if no scheme is present then the new url is a
-              // relative path and thus needs some extra care
-              if (!preg_match("/^https?:/i", $newurl)) {
-                $newurl = $original_url . $newurl;
-              }
-            } else {
-              $code = 0;
-            }
-          }
-        } while ($code && --$mr);
-
-        curl_close($rch);
-
-        if (!$mr) {
-          if ($maxredirect === null)
-            trigger_error('Too many redirects.', E_USER_WARNING);
-          else
-            $maxredirect = 0;
-
-          return FALSE;
-        }
-        curl_setopt($ch, CURLOPT_URL, $newurl);
-      }
-    }
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, $mr > 0);
+    curl_setopt($ch, CURLOPT_MAXREDIRS, $mr);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
     return curl_exec($ch);
   }
 }

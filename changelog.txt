@@ -3,6 +3,23 @@ Changelog
 
 Changelog for the Cpanel UAPI PHP Class
 
+version 2.0
+=============
+
+New:
+  - Chaining support added
+  - __get() added to support setting api and scope with an unbroken chain
+  - made cURL request errors available
+
+Changes / Improvements:
+  - Removed backwards compatability for older systems using php base path and safe mode
+  - Removed now redundant additional classes for UAPI and API 2. These are now called by chaining ->api2 or ->uapi.
+  - Added a setScope() function to set the scoupe outside of the chain.
+  - cleaned up the code a little
+
+Warning:
+  - This is not backwards compatable with past versions in a consistant way. Developers using v1.1 will need to change the class calls for the api version for example.
+
 version 1.1
 =============
 
