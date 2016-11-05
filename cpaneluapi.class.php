@@ -29,12 +29,12 @@ class cpanelAPI
   public $port = 2083; //default for ssl servers.
   public $server;
   public $maxredirect = 0; //Number of redirects to make, typically 0 is fine. on some shared setups this will need to be increased.
+  public $user;
   public $json = '';
 
   protected $scope; //String - Module we want to use
   protected $api;
   protected $auth;
-  protected $user;
   protected $pass;
   protected $secret;
   protected $type;
