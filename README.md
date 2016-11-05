@@ -15,17 +15,18 @@ See the example files, but typical useage takes the form of:
 ```
 $capi = new cpanelAPI('user', 'password', 'cpanel.example.com');
 ```
-*The API we want to use and the Module (also called Scope) are now protected and are set by `__get()`.
-The request layout looks like this: $capi->api->Module->request(args[])*
+The API we want to use and the Module (also called Scope) are now protected and are set by `__get()`.
+The request layout looks like this: $capi->api->Module->request(args[])
 
-*For example. We want to use the UAPI to call the Mysql get_restrictions function,.*
+For example. We want to use the UAPI to call the Mysql get_restrictions function.
 ```
 $response = $capi->uapi->Mysql->get_restrictions(); 
 print_r($response);
 ```
-*Now that we have set both the api AND the Module, we can call other functions within this api and scope without specifying them again
+
+Now that we have set both the api AND the Module, we can call other functions within this api and scope without specifying them again
 We have database prefixing enabled so we have to pass the usename into this function
-see https://documentation.cpanel.net/display/SDK/UAPI+Functions+-+Mysql%3A%3Acreate_database*
+see https://documentation.cpanel.net/display/SDK/UAPI+Functions+-+Mysql%3A%3Acreate_database
 ```
 $response = $capi->create_database(['name' => $capi->user.'_MyDatabase']);
 print_r($response);
@@ -38,11 +39,12 @@ $response = $capi->SSL->list_certs();
 
 ###API2
 
-*API2 is used in exactly the same way as the UAPI*
+API2 is used in exactly the same way as the UAPI
 ```
 $cpapi2 = new cpanelAPI('user', 'password', 'cpanel.example.com');
 ```
-*For example. We want to use the API2 to add a subdomain*
+
+For example. We want to use the API2 to add a subdomain
 ```
 $response = $capi->api2->SubDomain->addsubdomain(['rootdomain' => 'domain.com', 'domain' => 'sub']); 
 print_r($response);
