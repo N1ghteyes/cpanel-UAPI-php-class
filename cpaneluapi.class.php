@@ -169,7 +169,7 @@ class cpanelAPI
                 throw new Exception('$this->api is not set or is incorrectly set. The only available options are \'uapi\' or \'api2\'');
         }
         foreach ($arguments as $key => $value) {
-            $this->requestUrl .= $key . "=" . $value . "&";
+            $this->requestUrl .= $key . "=" . urlencode($value) . "&";
         }
 
         return $this->curl_request($this->requestUrl);
