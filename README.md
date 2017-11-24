@@ -49,3 +49,12 @@ For example. We want to use the API2 to add a subdomain
 $response = $capi->api2->SubDomain->addsubdomain(['rootdomain' => 'domain.com', 'domain' => 'sub']); 
 print_r($response);
 ```
+
+### 2 Factor Authentication
+
+To use this class on a cPanel instance with 2 Factor authentication, you need to pass the secret into the class constructor.
+```
+$capi = new cpanelAPI('user', 'password', 'cpanel.example.com', 'secret');
+```
+
+The secret can be found on the 2fa setup page. See: https://documentation.cpanel.net/display/ALD/Two-Factor+Authentication+for+cPanel#Two-FactorAuthenticationforcPanel-Configure2FA
