@@ -179,10 +179,9 @@ class cpanelAPI
             $this->requestUrl .= http_build_query($arguments);
         }
         if($this->httpMethod == 'POST'){
-            $this->postData = http_build_query($arguments);
+            $this->postData = $arguments;
         }
 
-        print $this->postData;
         return $this->curl_request($this->requestUrl);
     }
 
