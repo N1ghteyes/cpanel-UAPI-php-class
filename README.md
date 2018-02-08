@@ -1,4 +1,4 @@
-##cPanel UAPI and API2 PHP class
+## cPanel UAPI and API2 PHP class
 
 PHP class to provide an easy to use interface with cPanel’s UAPI and API2.
 Uses php magic functions to provide a simple and powerful interface.
@@ -7,16 +7,16 @@ v2.0 is not backwards compatible, and will likley under go a few more changes, s
 The class has been renamed to cpanelAPI.
 Some more testing is required.
 
-##Usage
+## Usage
 
 See the example files, but typical useage takes the form of:
 
-###Instantiate the class
+### Instantiate the class
 ```
 $capi = new cpanelAPI('user', 'password', 'cpanel.example.com');
 ```
 The API we want to use and the Module (also called Scope) are now protected and are set by `__get()`.
-The request layout looks like this: $capi->api->Module->request(args[])
+The request layout looks like this: `$capi->api->Module->request(args[])`
 
 For example. We want to use the UAPI to call the Mysql get_restrictions function.
 ```
@@ -32,12 +32,12 @@ $response = $capi->create_database(['name' => $capi->user.'_MyDatabase']);
 print_r($response);
 ```
 
-we can also change the scope without respecifying the api, note that the Module call is case sensative.
+we can also change the scope without respecifying the api, note that the Module call is case-sensitive.
 ```
 $response = $capi->SSL->list_certs();
 ```
 
-###API2
+### API2
 
 API2 is used in exactly the same way as the UAPI
 ```
