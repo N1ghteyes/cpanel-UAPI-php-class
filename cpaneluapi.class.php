@@ -11,7 +11,7 @@
  *
  * Please use UAPI where possible, only use API2 where the equivalent doesn't exist for UAPI
  *
- * @author N1ghteyes - www.source-control.co.uk
+ * @author Toby New - www.source-control.co.uk
  * @copyright 2016 N1ghteyes
  * @license license.txt The MIT License (MIT)
  * @link https://github.com/N1ghteyes/cpanel-UAPI-php-class
