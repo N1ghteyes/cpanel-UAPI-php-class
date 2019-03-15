@@ -57,7 +57,7 @@ class cpanelAPI
         $this->user = $user;
         $this->pass = $pass;
         $this->server = $server;
-        if ($this->secret) {
+        if ($secret) {
             $this->secret = $secret;
             $this->set2Fa();
         }
