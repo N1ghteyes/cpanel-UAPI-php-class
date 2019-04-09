@@ -9,7 +9,11 @@ v2.0 is not backwards compatible with v1.x, and will likley undergo a few more c
 The class has been renamed to `cpanelAPI`.
 Some more testing is required.
 
+- Note while this class is not depricated, there is a new Agnostic API class available which will do everything this class does (accept 2FA) and works with any RESTful / HTTP API - basically anything thats not SOAP. https://github.com/N1ghteyes/apicore
+
 ## Usage
+
+If you choose to use this class, please Star it in Github. This gives me a better idea of the number of users and those effected when changes are made.
 
 See the example files, but typical usage takes the form of:
 
