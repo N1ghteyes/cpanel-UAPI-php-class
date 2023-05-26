@@ -35,6 +35,7 @@ class cpanelAPI
     protected $scope; //String - Module we want to use
     protected $api;
     protected $auth;
+    protected $authType; // Authorization type 'Basic' to authenticate using account password or 'cpanel' to authenticate using cpanel api tokens to prevent leaking of account password
     protected $pass;
     protected $secret;
     protected $type;
@@ -48,11 +49,12 @@ class cpanelAPI
     protected $postData = '';
     /**
      * @param $user
-     * @param $pass
+     * @param $pass cpanel password or api token
      * @param $server
      * @param $secret
+     * @param $authType Basic/cpanel
      */
-    function __construct($user, $pass, $server, $secret = FALSE)
+    function __construct($user, $pass, $server, $secret = FALSE, $authType = 'Basic')
     {
         $this->user = $user;
         $this->pass = $pass;
@@ -61,6 +63,7 @@ class cpanelAPI
             $this->secret = $secret;
             $this->set2Fa();
         }
+        $this->authType = $authType;
     }
 
     /**
@@ -152,6 +155,15 @@ class cpanelAPI
     }
 
     /**
+    * @return string
+    **/
+    
+    protected function getAuth()
+    {
+        return ($this->authType == 'cpanel' ? $this->user . ":" . $this->pass : base64_encode($this->user . ":" . $this->pass));
+    }
+    
+    /**
      * @param $name
      * @param $arguments
      * @return bool|mixed
@@ -159,7 +171,7 @@ class cpanelAPI
      */
     protected function APIcall($name, $arguments)
     {
-        $this->auth = base64_encode($this->user . ":" . $this->pass);
+        $this->auth = $this->getAuth();
         $this->type = $this->ssl == 1 ? "https://" : "http://";
         $this->requestUrl = $this->type . $this->server . ':' . $this->port . $this->method;
         switch ($this->api) {
@@ -191,7 +203,7 @@ class cpanelAPI
      */
     protected function curl_request($url)
     {
-        $httpHeaders = array("Authorization: Basic " . $this->auth);
+        $httpHeaders = array("Authorization: {$this->authType} " . $this->auth);
         //If we have a token then send that with the request for 2FA.
         if ($this->token) {
             $httpHeaders[] = "X-CPANEL-OTP: " . $this->token;
